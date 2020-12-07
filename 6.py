@@ -23,12 +23,15 @@ def sum_answers(input, option='union'):
     tot_yes = 0
     for group in groups:
         if option == 'union':
-            yeses = {c for line in group.splitlines() for c in line.strip()}
+            group_yeses = {
+                person_yeses
+                for line in group.splitlines() for person_yeses in line.strip()
+            }
         elif option == 'intersection':
-            answers = [set(line) for line in group.splitlines()]
-            if answers:
-                yeses = set.intersection(*answers)
-        tot_yes += len(yeses)
+            person_yeses = [set(line) for line in group.splitlines()]
+            if person_yeses:
+                group_yeses = set.intersection(*person_yeses)
+        tot_yes += len(group_yeses)
 
     return tot_yes
 
