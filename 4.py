@@ -55,7 +55,7 @@ for line in input.splitlines():
 
 print(valid)
 
-# %%
+# %% method from Joel Grus
 
 from typing import Dict, List
 import re
