@@ -26,15 +26,14 @@ def get_input(raw: str) -> List[int]:
     return [int(num) for num in raw.splitlines()]
 
 
-def find_product(inputs: List[int], needed_sum: int) -> bool:
-    needs = {needed_sum - i for i in inputs}
+def find_product(inputs: List[int], goal: int) -> bool:
+    # From day 1
+    needs = {goal - i for i in inputs}
     found = False
     for i in inputs:
         if i in needs:
-            # num = i
             found = True
             break
-    # return num * (needed_sum - num)
     return found
 
 
@@ -67,6 +66,8 @@ print('part 1', invalid_num)
 
 def find_encryp_weakness(input: List[int], invalid_idx: int, invalid_num: int) -> int:
     weakness = -1
+    # This is brute force approach, I can alternatively add to previously
+    # summed window to reduce computation.
     for win_max_idx in range(2, invalid_idx):
         for win_min_idx in range(invalid_idx - 2):
             window = input[win_min_idx:win_max_idx]
