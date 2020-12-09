@@ -1,10 +1,6 @@
 import re
 from collections import defaultdict
 
-import os
-os.chdir(
-    '/home/henryw/Documents/Study/Computer_Programming_for_Data_Scientists/advent-of-code-2020')
-
 with open('inputs/8.txt', 'r') as file:
     raw = file.read()
 
