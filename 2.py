@@ -6,7 +6,7 @@ from collections import Counter
 import csv
 
 valid_count = 0
-for row in csv.reader(open('2.csv')):
+for row in csv.reader(open('inputs/2.csv')):
     counter = Counter(row[3])
     count = counter[row[2]]
     if int(row[0]) <= count <= int(row[1]):
@@ -17,7 +17,7 @@ print(valid_count)
 ##
 
 valid_count = 0
-for row in csv.reader(open('2.csv')):
+for row in csv.reader(open('inputs/2.csv')):
     psw = row[3]
     pos1 = psw[int(row[0]) - 1]
     pos2 = psw[int(row[1]) - 1]
