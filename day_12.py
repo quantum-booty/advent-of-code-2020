@@ -57,36 +57,36 @@ def manhat_dist(xi, yi, xf, yf):
 
 
 def do_actions_2(actions: Actions) -> Coord:
-    x_ship = 0
-    y_ship = 0
-    x_way = 10
-    y_way = 1
+    x = 0    # ship
+    y = 0    # ship
+    xw = 10    # waypoint
+    yw = 1    # waypoint
     for a in actions:
         if a.action == 'N':
-            y_way += a.value
+            yw += a.value
         elif a.action == 'S':
-            y_way -= a.value
+            yw -= a.value
         elif a.action == 'E':
-            x_way += a.value
+            xw += a.value
         elif a.action == 'W':
-            x_way -= a.value
+            xw -= a.value
 
         elif a.action == 'L':
             theta = a.value / 180 * pi
             rot_mat = np.array([[cos(theta), -sin(theta)], [sin(theta), cos(theta)]])
-            coord_way = rot_mat @ np.array([x_way, y_way])
-            x_way = coord_way[0]
-            y_way = coord_way[1]
+            coord_way = rot_mat @ np.array([xw, yw])
+            xw = coord_way[0]
+            yw = coord_way[1]
         elif a.action == 'R':
             theta = -a.value / 180 * pi
             rot_mat = np.array([[cos(theta), -sin(theta)], [sin(theta), cos(theta)]])
-            coord_way = rot_mat @ np.array([x_way, y_way])
-            x_way = coord_way[0]
-            y_way = coord_way[1]
+            coord_way = rot_mat @ np.array([xw, yw])
+            xw = coord_way[0]
+            yw = coord_way[1]
         elif a.action == 'F':
-            x_ship += a.value * x_way
-            y_ship += a.value * y_way
-    return int(x_ship), int(y_ship)
+            x += a.value * xw
+            y += a.value * yw
+    return int(x), int(y)
 
 
 #
