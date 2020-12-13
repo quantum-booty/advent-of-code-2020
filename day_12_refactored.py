@@ -62,6 +62,16 @@ class Ship:
         return abs(self.x) + abs(self.y)
 
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.arange(100)
+y = x**2
+plt.figure()
+plt.plot(x, y)
+plt.show()
+
+
 @dataclass
 class ShipAndWaypoint:
     x: int = 0    # ship
@@ -140,3 +150,6 @@ print(ship.manhat_dist())
 SAW = ShipAndWaypoint()
 SAW.do_actions(actions)
 print(SAW.manhat_dist())
+
+SAW2 = ShipAndWaypoint()
+SAW2.do_actions(actions)
