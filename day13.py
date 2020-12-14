@@ -26,22 +26,35 @@ def part1(raw):
     return (time - earl_time) * id
 
 
+# def part2(raw):
+#     # Brute forced, will never work ( T X T )
+#     _, ids = get_time_bus_id(raw)
+#     bus_0_id = ids[0]
+#     time = ids[0]
+#     offsets = [i + 1 for i, id in enumerate(ids[1:]) if id != 'x']
+#     ids = [id for id in ids[1:] if id != 'x']
+#     while True:
+#         condition = True
+#         for offset, id in zip(offsets, ids):
+#             condition &= (time + offset) % id == 0
+#             if condition is False:
+#                 time += bus_0_id
+#                 break
+#         if condition is True:
+#             return time
+
+
 def part2(raw):
-    # Brute forced, will never work ( T X T )
     _, ids = get_time_bus_id(raw)
-    bus_0_id = ids[0]
-    time = ids[0]
-    offsets = [i + 1 for i, id in enumerate(ids[1:]) if id != 'x']
-    ids = [id for id in ids[1:] if id != 'x']
-    while True:
-        condition = True
-        for offset, id in zip(offsets, ids):
-            condition &= (time + offset) % id == 0
-            if condition is False:
-                time += bus_0_id
-                break
-        if condition is True:
-            return time
+    time = 0
+    product = 1
+    for offset, id in enumerate(ids):
+        if id == 'x':
+            continue
+        while (time + offset) % id != 0:
+            time += product
+        product *= id
+    return time
 
 
 test_raw = """939
@@ -71,4 +84,4 @@ with open('inputs/13.txt', 'r') as file:
     raw = file.read()
 print(part1(raw))
 
-# print(part2(raw))
+print(part2(raw))
