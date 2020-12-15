@@ -62,16 +62,6 @@ class Ship:
         return abs(self.x) + abs(self.y)
 
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.arange(100)
-y = x**2
-plt.figure()
-plt.plot(x, y)
-plt.show()
-
-
 @dataclass
 class ShipAndWaypoint:
     x: int = 0    # ship

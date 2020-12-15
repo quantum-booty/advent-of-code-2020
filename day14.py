@@ -1,3 +1,4 @@
+# This is a really dumb way of doing it, I could've used | and & operators for bitmask.
 from typing import Tuple, Optional, List
 import re
 
@@ -46,6 +47,7 @@ def float_mask(mask: str) -> List[str]:
     positions = [i for i, char in enumerate(mask) if char == 'X']
     count = mask.count('X')
     masks = []
+    # The posibilities equals to binary strings.
     for i in range(2**count):
         m = bin(i)[2:]
         m = '0' * (count - len(m)) + m
