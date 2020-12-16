@@ -49,11 +49,11 @@ def part2(raw):
     time = 0
     product = 1
     for offset, id in enumerate(ids):
-        if id == 'x':
-            continue
-        while (time + offset) % id != 0:
-            time += product
-        product *= id
+        # skip if id == 'x' use isinstance to make type checker happy.
+        if isinstance(id, int):
+            while (time + offset) % id != 0:
+                time += product
+            product *= id
     return time
 
 

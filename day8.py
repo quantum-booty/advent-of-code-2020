@@ -21,6 +21,8 @@ def do_inst(op, arg, acc, i):
         return acc, i + arg
     elif op == 'nop':
         return acc, i + 1
+    else:
+        raise ValueError
 
 
 def get_acc_before_inf_loop(inst):
