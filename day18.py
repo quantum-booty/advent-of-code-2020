@@ -6,11 +6,12 @@
 # 1+3*2 = (1+3)*2 = 8
 
 import re
+from typing import List
 
 
 class Operation:
     # doing this for the sake of practicing OOP
-    def parse_operation(self, op_str: str):
+    def parse_operation(self, op_str: str) -> None:
         if op_str == '*':
             self.op = self.times
         elif op_str == '+':
@@ -27,7 +28,7 @@ class Operation:
         return str(int(a) + int(b))
 
 
-def parse_question(line):
+def parse_question(line) -> List[str]:
     q = re.split(r'(\d+)', line)
     if q[0] == '':
         q = q[1:]
@@ -37,7 +38,6 @@ def parse_question(line):
 
 
 def left_to_right_eval(line: str) -> str:
-    # This is definitely working
     q = parse_question(line)
 
     operation = Operation()
@@ -47,14 +47,14 @@ def left_to_right_eval(line: str) -> str:
         if pos < 3:
             continue
         if pos % 2 == 1:
-            # odd means the the char is an operator
+            # odd means that the char is an operator
             operation.parse_operation(char)
         elif pos % 2 == 0:
             result = operation.op(str(result), char)
     return result
 
 
-def plus_before_times_eval(line: str) -> str:
+def add_before_times_eval(line: str) -> str:
     q = parse_question(line)
     prod = 1
     while True:
@@ -70,7 +70,7 @@ def plus_before_times_eval(line: str) -> str:
             return str(prod)
 
 
-EVALUATORS = {'ltr': left_to_right_eval, 'pbt': plus_before_times_eval}
+EVALUATORS = {'ltr': left_to_right_eval, 'abt': add_before_times_eval}
 
 
 def eval_question(question: str, method: str) -> int:
@@ -114,12 +114,12 @@ assert eval_question(TEST_RAW_4, method='ltr') == 437
 assert eval_question(TEST_RAW_5, method='ltr') == 12240
 assert eval_question(TEST_RAW_6, method='ltr') == 13632
 
-assert eval_question(TEST_RAW_1, method='pbt') == 231
-assert eval_question(TEST_RAW_2, method='pbt') == 51
-assert eval_question(TEST_RAW_3, method='pbt') == 46
-assert eval_question(TEST_RAW_4, method='pbt') == 1445
-assert eval_question(TEST_RAW_5, method='pbt') == 669060
-assert eval_question(TEST_RAW_6, method='pbt') == 23340
+assert eval_question(TEST_RAW_1, method='abt') == 231
+assert eval_question(TEST_RAW_2, method='abt') == 51
+assert eval_question(TEST_RAW_3, method='abt') == 46
+assert eval_question(TEST_RAW_4, method='abt') == 1445
+assert eval_question(TEST_RAW_5, method='abt') == 669060
+assert eval_question(TEST_RAW_6, method='abt') == 23340
 
 #
 # Problem
@@ -135,5 +135,5 @@ print(sum)
 
 sum = 0
 for i, question in enumerate(homework.splitlines()):
-    sum += eval_question(question, method='pbt')
+    sum += eval_question(question, method='abt')
 print(sum)
