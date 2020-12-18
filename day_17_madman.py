@@ -1,6 +1,6 @@
 #
 # This is the madman solution, I've made it extensible to arbitrary dimensions.
-# Its more complicated than it sould be, because I'm retarded enough to dictionary instead of numpy array.
+# Its more complicated than it sould be, because I'm retarded enough to use dictionary instead of numpy array.
 #
 """
 * . is inactive, # is active
@@ -29,6 +29,7 @@ from typing import List, Dict, Tuple
 import itertools
 import copy
 from collections import defaultdict
+import numpy as np
 
 
 class HyperCube:
@@ -36,15 +37,19 @@ class HyperCube:
                  raw: str,
                  dimensions: List[str] = ['x', 'y', 'z'],
                  goal_dim: int = 3) -> None:
-        self.is_active: Dict[int, Dict]
-        self.ranges: Dict[str, List[int]]
+        # self.is_active: Dict[int, Dict]
+        # self.ranges: Dict[str, List[int]]
+
+        self.is_active: np.ndarray
 
         self.set_is_active(raw, goal_dim)
-        self.set_ranges(dimensions)
+        # self.set_ranges(dimensions)
 
     def get_is_active_coord(self, coord: Tuple[int, ...]) -> int:
         value = self.is_active
+        print(value[0][0][0])
         for dim in coord[::-1]:
+            print(value)
             value = value[dim]
         if not isinstance(value, int):
             raise ValueError
@@ -59,23 +64,26 @@ class HyperCube:
 
     def set_is_active(self, raw: str, goal_dim: int) -> None:
         # TODO: This is fucked!
-        def nest_defaultdict(goal_dim, nested_dd, current_dim=2):
-            print(nested_dd)
+        def nest_defaultdict(goal_dim: int, nested_dd: Dict, current_dim: int = 2):
             if current_dim == goal_dim:
                 return nested_dd
             else:
-                nested_dd = defaultdict(lambda: nested_dd)
-                return nest_defaultdict(goal_dim, nested_dd, current_dim + 1)
+                new_nested_dd = defaultdict()
+                new_nested_dd[0] = nested_dd
+                # new_nested_dd = defaultdict(nested_dd)
+                return nest_defaultdict(goal_dim, new_nested_dd, current_dim + 1)
 
-        self.is_active = defaultdict(lambda: defaultdict(lambda: 0))
+        # self.is_active = defaultdict(lambda: defaultdict(lambda: 0))
+        self.is_active = defaultdict(lambda: defaultdict(int))
         for y, line in enumerate(raw.splitlines()):
             for x, char in enumerate(line):
+                coord = (x, y) + (0, ) * (goal_dim - 2)
                 if char == '#':
-                    self.is_active[y][x] = 1
+                    self.set_is_active_coord(self.is_active, coord, value=1)
                 else:
-                    self.is_active[y][x] = 0
+                    self.set_is_active_coord(self.is_active, coord, value=0)
 
-        self.is_active = nest_defaultdict(goal_dim, self.is_active)
+        # self.is_active = nest_defaultdict(goal_dim, self.is_active)
 
     def set_ranges(self, dimensions: List[str]) -> None:
         self.ranges = {}
@@ -96,9 +104,8 @@ class HyperCube:
         for curr_coord in neighbours:
             if curr_coord == coord:
                 continue
-            neighbour = self.is_active
-            for dim in curr_coord[::-1]:
-                neighbour = neighbour[dim]
+
+            neighbour = self.get_is_active_coord(curr_coord)
 
             if isinstance(neighbour, int):
                 a_neighbours += neighbour
@@ -150,8 +157,7 @@ cube = HyperCube(TEST_RAW)
 cube.is_active
 # cube.ranges
 
-# %%
-
+print(cube.get_tot_active_at_cycle())
 assert cube.get_tot_active_at_cycle() == 112
 
 #
