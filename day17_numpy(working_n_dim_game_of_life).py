@@ -1,19 +1,18 @@
 from typing import Tuple
 import itertools
 import numpy as np
-import copy
 """
 * . is inactive, # is active
-* a cube can see its 26 immidiate neighbours
-* if a cube is active and exactly 2 or 3 of its neighbours are active, it remains
+* a game can see its 26 immidiate neighbours
+* if a game is active and exactly 2 or 3 of its neighbours are active, it remains
 active. Otherwise it becomes inactive.
-* If a cube is inactive but exactly 3 of its neighbours are active, the cube
+* If a game is inactive but exactly 3 of its neighbours are active, the game
 becomes active. Otherwise it remains inactive.
 * How many cubes are active after the sixth cycle?
 """
 
 
-class HyperCube:
+class GameofLife:
     def __init__(self, raw: str, n_dims=3) -> None:
         self.grid: np.ndarray
         self.set_grid(raw, n_dims)
@@ -80,11 +79,11 @@ TEST_RAW = """.#.
 #
 # Unit tests
 #
-cube = HyperCube(TEST_RAW, n_dims=3)
-assert cube.get_tot_active_at_cycle() == 112
+game = GameofLife(TEST_RAW, n_dims=3)
+assert game.get_tot_active_at_cycle() == 112
 
-cube = HyperCube(TEST_RAW, n_dims=4)
-assert cube.get_tot_active_at_cycle() == 848
+game = GameofLife(TEST_RAW, n_dims=4)
+assert game.get_tot_active_at_cycle() == 848
 
 #
 # Problem
@@ -99,8 +98,8 @@ RAW = """##.#....
 #.##..##
 #.####.."""
 
-cube = HyperCube(RAW, n_dims=3)
-print(cube.get_tot_active_at_cycle())
+game = GameofLife(RAW, n_dims=3)
+print(game.get_tot_active_at_cycle())
 
-cube = HyperCube(RAW, n_dims=4)
-print(cube.get_tot_active_at_cycle())
+game = GameofLife(RAW, n_dims=4)
+print(game.get_tot_active_at_cycle())
