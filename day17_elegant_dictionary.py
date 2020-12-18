@@ -63,6 +63,16 @@ class GameofLife:
             elif not is_active and a_neighbours == 3:
                 new_points[index]['is_active'] = 1
         self.points = new_points
+        # dict comprehension method, slightly faster than the for loop
+        # although it looks nicer it produce Dict type rather than defaultdict.
+        # I'm not a bit fan of types mixing.
+
+        # self.points = {
+        #     index: point
+        #     for index, point in self.points.items()
+        #     if point['is_active'] == 1 and point['population'] in (2, 3)
+        #     or point['is_active'] == 0 and point['population'] == 3
+        # }
 
     def get_tot_active_at_cycle(self, cycle_goal: int = 6) -> int:
         assert cycle_goal > self.cycle
