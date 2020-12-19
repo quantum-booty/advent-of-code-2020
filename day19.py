@@ -13,6 +13,8 @@ class Rules:
 
     def set_rules_messages(self, raw: str) -> None:
         rules_raw, messages_raw = raw.split('\n\n')
+        self.messages = [message for message in messages_raw.splitlines()]
+
         for line in rules_raw.splitlines():
             key, rule_raw = line.split(':')
             rule_raw = rule_raw.strip()
@@ -20,12 +22,11 @@ class Rules:
                 self.abkeys[rule_raw[1]] = key
             else:
                 self.rules[key] = rule_raw
-        for key in self.rules:
-            a_key = self.abkeys['a']
-            b_key = self.abkeys['b']
-            self.rules[key] = self.rules[key].replace(a_key, 'a').replace(b_key, 'b')
 
-            self.messages = [message for message in messages_raw.splitlines()]
+        a_key = self.abkeys['a']
+        b_key = self.abkeys['b']
+        for key in self.rules:
+            self.rules[key] = self.rules[key].replace(a_key, 'a').replace(b_key, 'b')
 
     def set_regex(self, key: str = '0'):
         regex = self.rules[key]
