@@ -44,12 +44,12 @@ class Rules:
                 if part2:
                     if key == '8':
                         if self.recursion_count_8 == self.recursion_limit:
-                            raise RecursionError
+                            raise self.RecursiveLimit
                         else:
                             self.recursion_count_8 += 1
                     if key == '11':
                         if self.recursion_count_11 == self.recursion_limit:
-                            raise RecursionError
+                            raise self.RecursiveLimit
                         else:
                             self.recursion_count_11 += 1
 
@@ -60,7 +60,7 @@ class Rules:
                         child_regex = self.set_regex(child_key, part2)
                         rule = re.sub(f'\\b({child_key})\\b', child_regex, rule)
 
-            except RecursionError:
+            except self.RecursiveLimit:
                 pass
 
             finally:
