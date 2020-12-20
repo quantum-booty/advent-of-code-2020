@@ -31,7 +31,7 @@ class Rules:
             self.rules['42'] = self.set_regex('42')
             self.rules['31'] = self.set_regex('31')
 
-    class RecursionError(Exception):
+    class RecursiveLimit(Exception):
         pass
 
     def set_regex(self, key: str = '0', part2=False) -> str:
