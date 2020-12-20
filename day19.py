@@ -3,47 +3,72 @@ import re
 
 
 class Rules:
-    def __init__(self, raw: str) -> None:
+    def __init__(self, raw: str, part2: bool = False) -> None:
         self.rules: Dict[str, str] = dict()
-        self.abkeys: Dict[str, str] = dict()
-        self.regex: str = ''
         self.messages: List[str] = []
-        self.set_rules_messages(raw)
-        self.set_regex()
+        self.set_rules_messages(raw, part2)
+        self.regex: str = self.set_regex(part2=part2)
 
-    def set_rules_messages(self, raw: str) -> None:
+    def set_rules_messages(self, raw: str, part2) -> None:
+        """Populate self.rules with key: rule pairs.
+        Also parse the messages into a list of strings."""
         rules_raw, messages_raw = raw.split('\n\n')
+
+        # parse messages
         self.messages = [message for message in messages_raw.splitlines()]
 
+        # parse rules
         for line in rules_raw.splitlines():
             key, rule_raw = line.split(':')
-            rule_raw = rule_raw.strip()
-            if rule_raw[1] in ('a', 'b'):
-                self.abkeys[rule_raw[1]] = key
-            else:
-                self.rules[key] = rule_raw
+            self.rules[key] = rule_raw.strip()
 
-        a_key = self.abkeys['a']
-        b_key = self.abkeys['b']
-        for key in self.rules:
-            self.rules[key] = self.rules[key].replace(a_key, 'a').replace(b_key, 'b')
+        if part2:
+            self.recursion_limit = 4
+            self.recursion_count_8 = 0
+            self.recursion_count_11 = 0
+            self.rules['8'] = '42 | 42 8'
+            self.rules['11'] = '42 31 | 42 11 31'
+            self.rules['42'] = self.set_regex('42')
+            self.rules['31'] = self.set_regex('31')
 
-    def set_regex(self, key: str = '0'):
-        regex = self.rules[key]
-        keys = set(re.findall(r'(\d+)', regex))
-        if keys != set():
-            for key_new in keys:
-                regex = regex.replace(key_new, f'({self.set_regex(key_new)})').replace(' ', '')
-                if key == '0':
-                    self.regex = '^' + regex + '$'
-                    # self.regex = regex
-            return regex
+    class RecursionError(Exception):
+        pass
+
+    def set_regex(self, key: str = '0', part2=False) -> str:
+        """Parse through the rules and create the regex recursively."""
+        rule = self.rules[key]
+        if rule in ('"a"', '"b"'):
+            return rule[1]
         else:
-            return regex
+            try:
+                if part2:
+                    if key == '8':
+                        if self.recursion_count_8 == self.recursion_limit:
+                            raise RecursionError
+                        else:
+                            self.recursion_count_8 += 1
+                    if key == '11':
+                        if self.recursion_count_11 == self.recursion_limit:
+                            raise RecursionError
+                        else:
+                            self.recursion_count_11 += 1
+
+                child_keys = list(set(re.findall(r'(\d+)', rule)))
+                child_keys.sort(reverse=True)
+                if child_keys != []:
+                    for child_key in child_keys:
+                        child_regex = self.set_regex(child_key, part2)
+                        rule = re.sub(f'\\b({child_key})\\b', child_regex, rule)
+
+            except RecursionError:
+                pass
+
+            finally:
+                return '(' + rule.replace(' ', '') + ')'
 
     def count_valid_messages(self) -> int:
-        compiled = re.compile(self.regex)
-        return sum(1 if compiled.match(message) else 0 for message in self.messages)
+        c = re.compile(self.regex)
+        return sum(bool(c.fullmatch(message)) for message in self.messages)
 
 
 #
@@ -73,20 +98,30 @@ aaabbb
 aaaabbb'''
 
 r = Rules(TEST_RAW_1)
-print(r.regex)
 assert r.count_valid_messages() == 2
 
 r = Rules(TEST_RAW_2)
-print(r.regex)
 assert r.count_valid_messages() == 2
+
+with open('inputs/19_part2_test.txt') as file:
+    TEST_RAW_3 = file.read()
+
+r = Rules(TEST_RAW_3)
+assert r.count_valid_messages() == 3
+
+r = Rules(TEST_RAW_3, part2=True)
+assert r.count_valid_messages() == 12
 
 #
 # Problem
 #
-
 with open('inputs/19.txt') as file:
     RAW = file.read()
 
 r = Rules(RAW)
+# print(r.regex)
+print(r.count_valid_messages())
+
+r = Rules(RAW, part2=True)
 print(r.regex)
 print(r.count_valid_messages())
