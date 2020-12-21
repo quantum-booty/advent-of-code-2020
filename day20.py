@@ -71,7 +71,6 @@ class JigsawPuzzle:
         self.find_border_tiles()
         self.grid: List[List[Config]]
         self.init_grid()
-        # self.fill_puzzle()
         self.counterclock_fill()
         self.downward_fill()
 
@@ -192,11 +191,9 @@ class JigsawPuzzle:
                 for from_side_id, matching_set in self.grid[from_row][from_col].matches.items():
                     assert len(matching_set) == 1
                     to_tile_id, to_config_id, to_side_id = [match for match in matching_set][0]
-                    # print(from_side_id, matching_set, to_side_id_goal)
                     if to_side_id == to_side_id_goal:
                         to_row, to_col = self.from_to(from_row, from_col, from_side_id, to_side_id)
                         self.grid[to_row][to_col] = self.tiles[to_tile_id].configs[to_config_id]
-                        # self.print_grid()
                         from_row, from_col = to_row, to_col
 
     def downward_fill(self) -> None:
@@ -212,7 +209,6 @@ class JigsawPuzzle:
                     # downward we go!
                     if to_side_id == 0:
                         self.grid[row][col] = self.tiles[to_tile_id].configs[to_config_id]
-                        # self.print_grid()
 
     @staticmethod
     def array_to_str(array: np.ndarray) -> str:
@@ -248,60 +244,58 @@ class JigsawPuzzle:
 
         return grid_str.strip()
 
+    @staticmethod
+    def image_matches(image_arr: np.ndarray, monster_arr: np.ndarray, sea_monster) -> int:
+        mon_len_row, mon_len_col = monster_arr.shape
+        img_len_row, img_len_col = image_arr.shape
 
-with open('inputs/20_part1_test.txt') as file:
-    TEST_RAW_1 = file.read()
+        count = 0
+        for row in range(img_len_row):
+            for col in range(img_len_col):
+                if img_len_row - row < mon_len_row or img_len_col - col < mon_len_col:
+                    continue
+                sub_image = image_arr[row:row + mon_len_row, col:col + mon_len_col]
+                sub_image_str = puzzle.array_to_str(sub_image)
+                match = re.match(sea_monster.replace('\n', ''), sub_image_str.replace('\n', ''))
+                if match:
+                    count += 1
+        return count
+
+    def part2(self, sea_monster) -> int:
+
+        image = self.grid_to_str(trim_sides=True)
+        image_arr = np.array([list(line) for line in image.splitlines()])
+        monster_arr = np.array([list(line) for line in sea_monster.splitlines()])
+        count = 0
+        for i in range(4):
+            if i != 0:
+                image_arr = np.rot90(image_arr)
+            count += self.image_matches(image_arr, monster_arr, sea_monster)
+
+            # y reflection
+            image_arr = image_arr[::-1]
+            count += self.image_matches(image_arr, monster_arr, sea_monster)
+
+            # x reflection
+            image_arr = image_arr[:, ::-1]
+            count += self.image_matches(image_arr, monster_arr, sea_monster)
+
+        tot_hash = sum(1 if char == "#" else 0
+                       for char in image) - count * sum(1 if char == "#" else 0
+                                                        for char in sea_monster)
+        print(image)
+        return tot_hash
+
 
 with open('inputs/20.txt') as file:
     RAW = file.read()
-    # puzzle = JigsawPuzzle(RAW)
-    # print(puzzle.part1())
 
 puzzle = JigsawPuzzle(RAW)
+
+print(puzzle.part1())
 
 sea_monster = """                  # 
 #    ##    ##    ###
  #  #  #  #  #  #   """.replace(' ', '.')
 print(sea_monster)
-
-
-def image_matches(image_arr: np.ndarray, monster_arr: np.ndarray) -> int:
-    mon_len_row, mon_len_col = monster_arr.shape
-    img_len_row, img_len_col = image_arr.shape
-
-    count = 0
-    for row in range(img_len_row):
-        for col in range(img_len_col):
-            if img_len_row - row < mon_len_row or img_len_col - col < mon_len_col:
-                continue
-            sub_image = image_arr[row:row + mon_len_row, col:col + mon_len_col]
-            sub_image_str = puzzle.array_to_str(sub_image)
-            match = re.match(sea_monster.replace('\n', ''), sub_image_str.replace('\n', ''))
-            if match:
-                count += 1
-    return count
-
-
-image = puzzle.grid_to_str(trim_sides=True)
-image_arr = np.array([list(line) for line in image.splitlines()])
-monster_arr = np.array([list(line) for line in sea_monster.splitlines()])
-count = 0
-for i in range(4):
-    if i != 0:
-        image_arr = np.rot90(image_arr)
-    count += image_matches(image_arr, monster_arr)
-
-    # y reflection
-    image_arr = image_arr[::-1]
-    count += image_matches(image_arr, monster_arr)
-
-    # x reflection
-    image_arr = image_arr[:, ::-1]
-    count += image_matches(image_arr, monster_arr)
-print(count)
-
-tot_hash = sum(1 if char == "#" else 0 for char in image) - count * sum(1 if char == "#" else 0
-                                                                        for char in sea_monster)
-print(tot_hash)
-
-print(image)
+print(puzzle.part2(sea_monster))
