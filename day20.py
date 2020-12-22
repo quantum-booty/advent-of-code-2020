@@ -6,7 +6,7 @@ A corner has only two matching sides
 There are four corners
 Can start from top left corner and fill to the right until the top border is filled
 Can then fill downword from the top border, until the whole puzzle is filled"""
-from typing import List, Dict, Set, DefaultDict, Tuple, Any, Optional
+from typing import List, Dict, Set, DefaultDict, Tuple, Optional
 import re
 import numpy as np
 from collections import defaultdict
