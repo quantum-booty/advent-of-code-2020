@@ -19,15 +19,18 @@ class Game:
         # from head.
         self.nodes: Dict[int, Node]
         self.build_game(cups)
+
         self.largest_4: List[int]
         self.smallest_4: List[int]
-        self.set_smallest_largests()
+        self.set_smallest_largests_4()
+
         self.pickup: List[Node]
 
         # initialize the position at head
         self.cur_node = self.head
 
     def build_game(self, cups: List[int]) -> None:
+        """set self.head and self.nodes"""
         self.head = Node(cups[0])
         self.nodes = {}
         self.nodes[cups[0]] = self.head
@@ -40,10 +43,24 @@ class Game:
         assert node is not None
         node.next = self.head
 
-    def set_smallest_largests(self) -> None:
+    def set_smallest_largests_4(self) -> None:
+        """Used for finding max and min node"""
         node_values = self.nodes.keys()
         self.largest_4 = heapq.nlargest(4, node_values)
         self.smallest_4 = heapq.nsmallest(4, node_values)
+
+    def low_high_nodes(self, part1: bool = True) -> Tuple[Node, Node]:
+        pickup_values = [node.value for node in self.pickup]
+        largest_4 = self.largest_4[:]
+        smallest_4 = self.smallest_4[:]
+
+        for num in pickup_values:
+            if num in largest_4:
+                largest_4.remove(num)
+            if num in smallest_4:
+                smallest_4.remove(num)
+
+        return self.nodes[min(smallest_4)], self.nodes[max(largest_4)]
 
     @staticmethod
     def traverse(text: str, head: Node, print_list=True) -> List[int]:
@@ -79,7 +96,7 @@ class Game:
             return None
 
     def pop_3_after_cur(self) -> None:
-        # returns the head of the three popped nodes
+        # delete pickups from self.head and set self.pickup
         cur_node = self.cur_node
 
         pickup_head = cur_node.next
@@ -89,6 +106,7 @@ class Game:
         self.pickup = [pickup_head, pickup_mid, pickup_tail]
 
         if self.head in self.pickup:
+            # move the head if the head is picked up
             self.head = pickup_tail.next
 
         # delete the three nodes from the cups
@@ -96,59 +114,35 @@ class Game:
         # delete next of tail to isolate itself from the rest
         pickup_tail.next = None
 
-    def low_high_nodes(self, part1: bool = True) -> Tuple[Node, Node]:
-        pickup_values = [node.value for node in self.pickup]
-        largest_4 = self.largest_4[:]
-        smallest_4 = self.smallest_4[:]
-
-        for num in pickup_values:
-            if num in largest_4:
-                largest_4.remove(num)
-            if num in smallest_4:
-                smallest_4.remove(num)
-
-        return self.nodes[min(smallest_4)], self.nodes[max(largest_4)]
-
     def play_round(self) -> None:
         self.pop_3_after_cur()
         pickup_head = self.pickup[0]
         pickup_tail = self.pickup[-1]
 
-        # print('cur cup:', self.cur_node)
-        # print('pick up:', pickup_head.value, pickup_head.next.value, pickup_tail.value)
-        # self.traverse('after pickup', self.head, True)
-
         lo_node, hi_node = self.low_high_nodes()
-        # print('lo', lo_node.value, 'hi', hi_node.value)
 
         dest_node = None
 
         for i in itertools.count(1):
             goal = self.cur_node.value - i
-            # print('goal', goal)
             if goal < lo_node.value:
                 dest_node = hi_node
                 break
             dest_node = self.search(goal)
             if dest_node:
                 break
-        # print('destination:', dest_node.value)
 
         pickup_tail.next = dest_node.next
         dest_node.next = pickup_head
-        # dest next
-        # dest pickup_head _ pickup_tail next
 
         self.cur_node = self.cur_node.next
         self.pickup = []
 
     def play_n_rounds(self, n: int = 100) -> None:
         for i in range(n):
-            # self.traverse('cups:', self.head, True)
             self.play_round()
             if i % 1000 == 0:
                 print(i / 1000)
-            # print('------------------------------------')
 
     def part1(self) -> int:
         one_node = self.search(1, exclude_pickup=False)
