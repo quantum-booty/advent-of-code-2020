@@ -1,6 +1,5 @@
 from typing import Tuple, List, Dict, DefaultDict
 from collections import defaultdict
-import functools
 
 DIRECTIONS = {'ne': (1, 0), 'e': (0, 1), 'se': (-1, 1), 'sw': (-1, 0), 'w': (0, -1), 'nw': (1, -1)}
 Coord = Tuple[int, int]
