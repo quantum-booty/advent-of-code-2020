@@ -31,8 +31,6 @@ class Validation:
         self.nearby_tickets: Tickets
         self.parse_all(raw)
 
-        self.checklists: List[List[Set[str]]]
-
     @staticmethod
     def parse_rules(rules_raw: str) -> Rules:
         rules = []
